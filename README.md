@@ -14,6 +14,9 @@ it is not a substitute for region-specific advice from a qualified agronomist.
 ## Current scope
 
 - Manual entry of all seven numeric model features.
+- Optional place search and current-weather retrieval through Open-Meteo.
+- Location-assisted mapping of current temperature and relative humidity while
+  retaining manual soil values and model rainfall.
 - Reproducible dataset validation and an 80/20 stratified experiment split.
 - Comparison of Logistic Regression, Decision Tree, K-Nearest Neighbors, Support
   Vector Machine, Gaussian Naive Bayes, and Random Forest on the same held-out split.
@@ -21,11 +24,12 @@ it is not a substitute for region-specific advice from a qualified agronomist.
   probabilities.
 - Global Random Forest feature importance.
 - Soil-status reporting that remains independent of the crop prediction.
-- A high-contrast Streamlit dashboard that performs inference only after the user
-  selects **Predict Crop**.
+- A high-contrast two-mode Streamlit dashboard that performs inference only after the
+  user selects **Predict Crop**.
 
-Location-based weather input is a proposed Version 2 enhancement and is deliberately
-not part of the current manual-input application.
+Location assistance is a Version 2 application enhancement. It does not alter the
+dataset, training split, saved classifier, encoder, or measured research results.
+Manual Input remains the reproducible baseline path.
 
 ## Data provenance and license
 
@@ -101,6 +105,67 @@ python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
 ```
 
+The weather integration uses the pinned `requests` dependency for bounded HTTP
+requests. The basic Open-Meteo geocoding and forecast endpoints used here require no
+API key, paid subscription, or user account.
+
+## Input modes
+
+### Manual Input Mode
+
+Manual Input is selected by default. Enter `N`, `P`, `K`, temperature (°C), relative
+humidity (%), soil pH, and rainfall (mm), then select **Predict Crop**. This is the
+baseline application path corresponding most closely to the original tabular
+experiment. It makes no weather-service request.
+
+### Location-Assisted Input Mode
+
+Select **Location-Assisted Input**, enter a place, and select **Search Location**.
+The app sends that place text to the
+[Open-Meteo geocoding service](https://open-meteo.com/en/docs/geocoding-api), shows
+several matches when available, and requires you to choose a specific result. It
+then uses the selected result's provider-supplied latitude and longitude—not a
+silently assumed city—to retrieve current conditions from the
+[Open-Meteo forecast service](https://open-meteo.com/en/docs).
+
+Select **Get Weather** to retrieve data or **Refresh Weather** to bypass the short
+weather cache. Requests are never made on each keystroke and weather is not refreshed
+on a timer. The app displays the selected place, administrative region, country,
+coordinates, timezone, provider, provider timestamp, current temperature, current
+relative humidity, and current precipitation. Temperature is requested in Celsius
+and maps to model `temperature`; relative humidity is requested as a percentage and
+maps to model `humidity`.
+
+`N`, `P`, `K`, soil pH, and model rainfall remain manual in this mode. Nutrient and
+pH values should come from measurements or a compatible soil-test report; the app
+does not retrieve or sense them. Both modes pass the same seven fields to
+`src.pipeline.run_pipeline(...)`, which loads the same saved model and encoder. A
+location lookup or weather refresh never trains a model.
+
+#### Rainfall compatibility policy
+
+The Kaggle data card describes the training feature only as **rainfall in mm**; it
+does not document a daily, hourly, monthly, seasonal, or other measurement period.
+Open-Meteo current precipitation is therefore displayed as contextual information
+only. It is not automatically mapped to the model's `rainfall` field, even though
+both use millimetres. The user must enter and confirm model rainfall separately.
+This avoids presenting current model-step precipitation as scientifically equivalent
+to an underspecified training feature. Live weather demonstrations are not used to
+recompute model accuracy or support research-performance claims.
+
+### Input flows
+
+```text
+Manual Input
+  seven manual fields → saved inference pipeline → recommendation and explanations
+
+Location-Assisted Input
+  place search → explicit location selection → current Open-Meteo retrieval
+  Open-Meteo temperature + humidity ─┐
+  manual N/P/K/pH + model rainfall ──┴→ same saved inference pipeline
+  current precipitation → context display only (never automatic model rainfall)
+```
+
 ## Reproduce the workflow
 
 Run commands from the repository root and keep the stages separate:
@@ -130,7 +195,7 @@ python src/predict.py 90 42 43 25 80 6.5 200
 # 7. Run all automated tests
 python -m unittest discover -s tests -p "test_*.py"
 
-# 8. Launch the manual-input application
+# 8. Launch the two-mode application
 streamlit run app.py
 ```
 
@@ -149,7 +214,7 @@ assessment outputs.
 
 ```text
 .
-├── app.py                              # Manual Streamlit interface; inference only
+├── app.py                              # Manual + location-assisted UI; inference only
 ├── data/
 │   ├── Crop_recommendation.csv         # Original upstream CSV (not rewritten)
 │   └── dataset_metadata.json            # Source version, license, size, checksum
@@ -166,8 +231,9 @@ assessment outputs.
 │   ├── predict.py                      # Saved-model prediction and predict_proba
 │   ├── explain.py                      # Global feature importance
 │   ├── soil_assessment.py              # Independent configurable soil rules
+│   ├── weather.py                      # Open-Meteo geocoding/weather boundary
 │   └── pipeline.py                     # Combined structured inference response
-└── tests/                              # Validation, inference, pipeline, and UI tests
+└── tests/                              # ML, UI, mocked weather, and mapping tests
 ```
 
 The combined pipeline returns the recommended crop, its model probability, the
@@ -262,13 +328,45 @@ the relevant prior work.
 - **Feature semantics:** The dataset's nutrient fields are described as ratios, but
   the data card does not establish a field sampling protocol or universal unit basis.
   Inputs must be made compatible with the training data before real-world use.
-- **Weather Version 2:** A future location mode may retrieve temperature, humidity,
-  and precipitation from Open-Meteo while retaining manual `N`, `P`, `K`, and pH.
-  API precipitation periods and definitions must first be shown to match the training
-  dataset's `rainfall` feature. Hourly precipitation must not be substituted directly
-  for dataset rainfall merely because both are expressed in millimetres. Network or
-  geocoding failure must never break manual mode, and any provider key must remain in
-  environment/secrets rather than Git.
+- **Weather Version 2:** Location mode retrieves current temperature, humidity, and
+  precipitation context from Open-Meteo while retaining manual `N`, `P`, `K`, pH,
+  and model rainfall. Current precipitation is not substituted for dataset rainfall.
+  Live weather is time- and provider-dependent, may be missing, and does not validate
+  model performance on that place. Network or geocoding failure does not affect the
+  independent Manual Input mode.
+
+## Weather errors, privacy, and troubleshooting
+
+Place search and current conditions require internet access to Open-Meteo. Requests
+have a finite timeout and the UI reports unknown locations, timeouts, network/HTTP
+failures, malformed responses, and missing required measurements without inserting
+fake defaults. If retrieval fails:
+
+1. Check the network connection and try **Search Location** or **Refresh Weather**
+   later.
+2. Qualify an ambiguous place with a region or country and choose the intended match.
+3. Continue in **Manual Input** mode; it does not depend on Open-Meteo.
+
+For development without permanent external-network dependence, the automated suite
+mocks geocoding and weather responses, including failure paths. User-entered place
+text and selected coordinates are sent to Open-Meteo for lookup and conditions. The
+app does not request browser GPS permission, claim GPS tracking, or retain a location
+history. Consult Open-Meteo's service and privacy terms before public deployment.
+
+## Version 2 change log
+
+- Added modular Open-Meteo location search and current-weather retrieval with bounded
+  requests, structured validation, explicit provider metadata, and short caching.
+- Added optional Location-Assisted Input while retaining Manual Input as the default
+  validated baseline path.
+- Added safe mapping for Celsius temperature and percentage relative humidity.
+- Kept current precipitation separate from manually confirmed model rainfall because
+  the training feature's temporal semantics are undocumented.
+- Added mocked provider/error tests and UI mapping regression tests without modifying
+  the dataset, saved models, split, or measured experimental artifacts.
+
+Open-Meteo integration is a software/application enhancement, not a claim of research
+novelty, automatic soil sensing, GPS tracking, or real-world field validation.
 
 ## Suggested functional check
 
