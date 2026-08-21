@@ -189,14 +189,17 @@ class FrontendAppTests(unittest.TestCase):
         finally:
             self.app.st = original_streamlit
 
-        self.assertIn("Recommendation", recorder.subheaders)
+        self.assertIn("Recommended Crop", recorder.subheaders)
         self.assertIn("Top-3 Crop Recommendations", recorder.subheaders)
-        self.assertIn("Global Model Feature Importance", recorder.subheaders)
-        self.assertIn("Soil Nutrient Assessment", recorder.subheaders)
+        self.assertIn("Why this crop?", recorder.subheaders)
+        self.assertIn("Overall Model Feature Importance", recorder.subheaders)
+        self.assertIn("Indicative Soil Parameter Assessment", recorder.subheaders)
         self.assertIn(("Recommended crop", "Rice"), recorder.metrics)
         self.assertIn(("Prediction probability", "85.00%"), recorder.metrics)
         self.assertEqual(len(recorder.dataframes), 2)
         self.assertTrue(any("require verification" in warning for warning in recorder.warnings))
+        self.assertTrue(any("temporarily unavailable" in message for message in recorder.info_calls))
+        self.assertFalse(any("accuracy" in caption.lower() for caption in recorder.captions[:2]))
 
     def test_frontend_does_not_contain_training_implementation(self):
         source = APP_PATH.read_text(encoding="utf-8")

@@ -1,10 +1,10 @@
-# Smart Crop Recommendation System
+# Explainable Crop Recommendation System
 
 This repository is a tabular-data crop recommendation prototype. It accepts seven
 numeric measurements—`N`, `P`, `K`, `temperature`, `humidity`, `ph`, and
 `rainfall`—and combines a saved classifier with Top-3 model probabilities, global
-feature importance, and a separate rule-based soil assessment in one Streamlit
-application.
+feature importance, per-prediction SHAP attribution, and a separate provisional
+rule-based soil assessment in one Streamlit application.
 
 The intended research position is an **integrated decision-support framework**, not
 a claim that Random Forest, crop recommendation, fertilizer guidance, weather input,
@@ -22,10 +22,12 @@ it is not a substitute for region-specific advice from a qualified agronomist.
   Vector Machine, Gaussian Naive Bayes, and Random Forest on the same held-out split.
 - Saved-model inference with one recommended crop and exactly three ranked class
   probabilities.
-- Global Random Forest feature importance.
+- Deterministic local SHAP attribution under **Why this crop?**, plus global Random
+  Forest feature importance in a separate technical view.
 - Soil-status reporting that remains independent of the crop prediction.
-- A high-contrast two-mode Streamlit dashboard that performs inference only after the
-  user selects **Predict Crop**.
+- A read-only **Model & Research Evaluation** dashboard backed by stored artifacts.
+- A responsive, high-contrast two-mode Streamlit dashboard that performs inference
+  only after the user selects **Predict Crop**.
 
 Location assistance is a Version 2 application enhancement. It does not alter the
 dataset, training split, saved classifier, encoder, or measured research results.
@@ -220,36 +222,62 @@ assessment outputs.
 ## Project architecture
 
 ```text
-.
-├── app.py                              # Manual + location-assisted UI; inference only
-├── data/
-│   ├── Crop_recommendation.csv         # Original upstream CSV (not rewritten)
-│   └── dataset_metadata.json            # Source version, license, size, checksum
-├── models/
-│   ├── random_forest_crop.joblib       # Saved fitted classifier
-│   ├── label_encoder.joblib            # Saved target encoder
-│   └── research/                       # Experimental calibrated/tuned variants
-├── results/
-│   ├── ...                             # Protected baseline evaluation artifacts
-│   └── research/                       # Paper-oriented tables, JSON, and figures
-├── src/
-│   ├── download_data.py                 # Safe KaggleHub copy/checksum helper
-│   ├── preprocessing.py                # Load, validate, split features/target
-│   ├── train.py                        # Random Forest training and evaluation
-│   ├── evaluate.py                     # Reliability, CV, leakage, saved artifacts
-│   ├── compare_models.py               # Fair six-model comparison
-│   ├── predict.py                      # Saved-model prediction and predict_proba
-│   ├── explain.py                      # Global feature importance
-│   ├── soil_assessment.py              # Independent configurable soil rules
-│   ├── weather.py                      # Open-Meteo geocoding/weather boundary
-│   ├── pipeline.py                     # Combined structured inference response
-│   └── research/                       # Isolated reproducible research experiments
-└── tests/                              # Production and deterministic research tests
+                         USER
+                           │
+             ┌─────────────┴─────────────┐
+             │                           │
+       Manual Input             Location-Assisted
+             │                           │
+             │                    Open-Meteo
+             │                           │
+             │                 Temp + Humidity
+             │                 + precipitation
+             │                    as context
+             │                           │
+             └─────────────┬─────────────┘
+                           │
+                           ▼
+                    Input Validation
+                           │
+                           ▼
+                Baseline Random Forest
+                           │
+            ┌──────────────┼──────────────┐
+            │              │              │
+            ▼              ▼              ▼
+      Recommended       Top-3          Probability
+          Crop           Crops
+            │
+            ▼
+        Local SHAP
+       "Why this crop?"
+            │
+            ▼
+      Soil Assessment
+            │
+            ▼
+     Streamlit Dashboard
+
+Research Evaluation
+      │
+      ├── Top-K
+      ├── Calibration
+      ├── SHAP
+      ├── Tuning
+      ├── Ablation
+      ├── Robustness
+      ├── Model Disagreement
+      └── Error Analysis
 ```
 
-The combined pipeline returns the recommended crop, its model probability, the
-descending Top-3 list, global feature importance, and soil assessment. It never uses
-provisional soil rules to alter model probabilities or reorder crop predictions.
+The application has four final layers: machine learning, intelligent decision
+support, the real-time Streamlit application, and stored research evaluation.
+`src/predict.py` is the only saved-model prediction implementation;
+`src/explain.py` contains the shared global and local SHAP compatibility layer;
+`src/app_support.py` contains read-only production metadata, Top-3 presentation, and
+research-summary loading. Research plotting and experiments remain under
+`src/research/`. The pipeline never uses provisional soil categories to alter model
+probabilities or reorder crop predictions.
 
 ## Experimental outputs
 
@@ -303,6 +331,31 @@ a unique accuracy win. For the documented functional input (`90, 42, 43, 25, 80,
 6.5, 200`), the saved Random Forest returned Rice `54%`, Jute `45%`, and Watermelon
 `1%`. These are raw `predict_proba()` outputs for that input, not calibrated
 guarantees or claims about real-world field performance.
+
+## Final production application decision
+
+The baseline `models/random_forest_crop.joblib` remains the only production model.
+Both Manual and Location-Assisted modes pass the same seven ordered features through
+the same validation and prediction pathway. Location never selects, retrains, or
+updates a model. The tuned Random Forest produced the same held-out accuracy and
+macro F1 as the baseline but worse log loss, so it remains isolated under
+`models/research/`. The sigmoid-calibrated model did not improve overall measured
+probability quality and also remains experimental. The UI therefore calls the raw
+output **Prediction Probability**; it does not describe that value as guaranteed
+confidence, crop-success probability, or yield probability.
+
+After a successful prediction, the app uses the same baseline model to calculate
+predicted-class SHAP contributions. The farmer-facing **Why this crop?** section
+shows up to five influential inputs and explicitly labels whether each supports or
+opposes the model output. An expandable technical view displays all seven numeric
+SHAP contributions and an in-memory chart. No live explanation is saved to disk.
+SHAP failure is isolated: the recommendation and Top-3 probabilities remain usable
+and the UI reports that detailed explanation is temporarily unavailable.
+
+The **Model & Research Evaluation** view reads existing JSON/CSV/PNG artifacts only.
+Opening it never starts model training, tuning, calibration, ablation, robustness,
+or research SHAP execution. Optional missing research summaries or charts are
+reported without disabling crop prediction.
 
 ## Research Evaluation
 
@@ -387,6 +440,25 @@ The measured narrative is in `results/research/findings.md`; consolidated model
 metrics are in `research_summary.csv` and `research_summary.json`. Figures are
 paper-ready research artifacts but are not yet final IEEE-layout figures.
 
+## Deployment readiness and required artifacts
+
+From a fresh clone, create a Python 3.10+ virtual environment, install
+`requirements.txt`, and run `streamlit run app.py`. The application needs these
+committed production artifacts and never downloads or retrains them automatically:
+
+```text
+models/random_forest_crop.joblib
+models/label_encoder.joblib
+```
+
+`results/global_feature_importance.png` and all `results/research/` files are presentation
+artifacts; the app handles optional research artifacts gracefully when absent. The
+model and encoder are required for prediction, and startup shows a clear restoration
+message if either is missing. Open-Meteo requires network access for Location Mode
+but no API key or repository secret. Manual Mode remains independent of the weather
+service. `.venv`, `.env`, Python/test caches, temporary SHAP caches, and common IDE
+metadata are excluded by `.gitignore`.
+
 ## Interpretation and scientific contribution
 
 The defensible contribution is the integration and evaluation of:
@@ -408,26 +480,39 @@ the relevant prior work.
 - **Dataset scope:** The public dataset is commonly used and is described as derived
   from Indian agricultural context. High performance on its held-out rows would be
   dataset-specific; it does not establish performance on farms, seasons, sensors, or
-  regions not represented in the data. External and field validation are required.
+  regions not represented in the data. This is a benchmark dataset only; no real
+  farm-field validation has been performed, and high benchmark accuracy does not
+  guarantee field performance.
 - **Model probability:** Random Forest `predict_proba()` is shown as prediction
-  probability, not guaranteed certainty and not automatically calibrated confidence.
-  Probability calibration requires a separate measured experiment.
+  probability, not calibrated real-world certainty, guaranteed confidence, crop
+  success, or yield probability. The measured calibration experiment did not justify
+  replacing the raw production model.
 - **Global importance:** Impurity-based `feature_importances_` summarizes the fitted
   model globally. It is not causal and is not a faithful local explanation for a
   single recommendation.
+- **Local SHAP:** Predicted-class SHAP contributions describe behavior of this fitted
+  model for one input. They do not establish agricultural causality, soil quality,
+  fertilizer need, or guaranteed suitability.
 - **Soil rules:** Until every threshold is backed by a documented, credible, and
   region-appropriate agricultural source, the application labels soil statuses as
   provisional or **Needs verification**. It does not issue specific fertilizer
-  prescriptions from unverified rules.
+  prescriptions or quantities from unverified rules. Interpretation depends on
+  units, sampling and testing methods, region, and crop context.
 - **Feature semantics:** The dataset's nutrient fields are described as ratios, but
   the data card does not establish a field sampling protocol or universal unit basis.
-  Inputs must be made compatible with the training data before real-world use.
+  N/P/K inputs require external soil measurements and must be made compatible with
+  the training data before real-world use; the application does not invent units.
 - **Weather Version 2:** Location mode retrieves current temperature, humidity, and
   precipitation context from Open-Meteo while retaining manual `N`, `P`, `K`, pH,
   and model rainfall. Current precipitation is not substituted for dataset rainfall.
   Live weather is time- and provider-dependent, may be missing, and does not validate
   model performance on that place. Network or geocoding failure does not affect the
   independent Manual Input mode.
+- **Research reliability studies:** Robustness perturbations are synthetic numerical
+  experiments, and inter-model disagreement is not formal uncertainty. Neither is a
+  substitute for external validation.
+- **Decision-support scope:** Top-3 crops are model-ranked alternatives, not proof that
+  crops are interchangeable. The recommendation is decision support, not a guarantee.
 
 ## Weather errors, privacy, and troubleshooting
 
@@ -471,10 +556,12 @@ N=90, P=42, K=43, temperature=25, humidity=80, ph=6.5, rainfall=200
 ```
 
 Select **Predict Crop** and verify that the model and encoder load, the application
-shows exactly three descending probabilities, the global importance section is
-present, and all four soil statuses plus the overall assessment appear. The displayed
-crop and all numeric results must come from that local artifact run; no expected crop
-or probability is hard-coded here.
+shows exactly three descending probabilities, a **Why this crop?** explanation,
+the expandable global-importance section, exact prediction-input details, and all four
+provisional soil statuses. Open **Model & Research Evaluation** and verify stored
+metrics and selected charts appear without an experiment starting. The displayed crop
+and all numeric results must come from model inference or stored artifacts; no expected
+crop or probability is hard-coded in the application.
 
 Also check negative `N`/`P`/`K`, out-of-range pH, and programmatic non-numeric inputs.
 They must produce readable validation errors without modifying the dataset or saved

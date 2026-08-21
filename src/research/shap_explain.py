@@ -16,6 +16,11 @@ from scipy.stats import spearmanr
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 
+from src.explain import (
+    contribution_records,
+    local_explanation_text,
+    normalize_multiclass_shap,
+)
 from src.preprocessing import FEATURE_NAMES
 from src.research.common import (
     BASELINE_MODEL_PATH,
@@ -29,82 +34,6 @@ from src.research.common import (
     validate_probability_matrix,
     write_json,
 )
-
-
-def normalize_multiclass_shap(
-    raw_values: Any,
-    *,
-    n_samples: int,
-    n_features: int,
-    n_classes: int,
-) -> np.ndarray:
-    """Normalize supported SHAP versions to ``samples × features × classes``."""
-
-    if isinstance(raw_values, list):
-        if len(raw_values) != n_classes:
-            raise ValueError("SHAP class-list length does not match model classes.")
-        arrays = [np.asarray(values, dtype=float) for values in raw_values]
-        if any(values.shape != (n_samples, n_features) for values in arrays):
-            raise ValueError("A class-specific SHAP matrix has an unexpected shape.")
-        normalized = np.stack(arrays, axis=-1)
-    else:
-        normalized = np.asarray(raw_values, dtype=float)
-        if normalized.shape == (n_classes, n_samples, n_features):
-            normalized = np.moveaxis(normalized, 0, -1)
-    expected = (n_samples, n_features, n_classes)
-    if normalized.shape != expected:
-        raise ValueError(f"Expected multiclass SHAP shape {expected}, found {normalized.shape}.")
-    if not np.isfinite(normalized).all():
-        raise ValueError("SHAP contributions contain non-finite values.")
-    return normalized
-
-
-def contribution_records(
-    feature_values: Sequence[float],
-    contributions: Sequence[float],
-    *,
-    feature_names: Sequence[str] = FEATURE_NAMES,
-) -> list[dict[str, Any]]:
-    """Create absolute-magnitude-sorted local contribution records."""
-
-    values = np.asarray(feature_values, dtype=float)
-    shap_values = np.asarray(contributions, dtype=float)
-    if values.shape != (len(feature_names),) or shap_values.shape != (len(feature_names),):
-        raise ValueError("Feature values and SHAP contributions must match feature order.")
-    order = np.argsort(-np.abs(shap_values), kind="stable")
-    return [
-        {
-            "feature": str(feature_names[index]),
-            "feature_value": float(values[index]),
-            "shap_contribution": float(shap_values[index]),
-            "direction": "supports" if shap_values[index] >= 0 else "opposes",
-        }
-        for index in order
-    ]
-
-
-def local_explanation_text(
-    predicted_crop: str,
-    records: Sequence[dict[str, Any]],
-    *,
-    limit: int = 3,
-) -> str:
-    """Create deterministic, non-causal language for a local explanation."""
-
-    if limit < 1:
-        raise ValueError("Explanation limit must be positive.")
-    strongest = list(records)[:limit]
-    details = "; ".join(
-        f"{row['feature']} ({row['direction']} the predicted-class model score, "
-        f"SHAP {float(row['shap_contribution']):+.6f})"
-        for row in strongest
-    )
-    return (
-        f"Predicted crop: {predicted_crop}. Strongest model contributions: {details}. "
-        "These values explain model behavior for this input; they are not causal "
-        "agronomic effects or proof of crop suitability."
-    )
-
 
 def explain_one_sample(
     model: Any,

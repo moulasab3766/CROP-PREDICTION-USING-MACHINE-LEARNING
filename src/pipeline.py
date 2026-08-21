@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import logging
 from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import Any
@@ -28,6 +29,9 @@ except ImportError:  # pragma: no cover - direct script use
         validate_features,
     )
     from soil_assessment import ThresholdRule, assess_soil
+
+
+LOGGER = logging.getLogger(__name__)
 
 
 def run_pipeline(
@@ -68,14 +72,33 @@ def run_pipeline(
         save_csv_path=feature_importance_csv_path,
         save_chart_path=feature_importance_chart_path,
     )
-    soil_assessment = assess_soil(
-        values["N"],
-        values["P"],
-        values["K"],
-        values["ph"],
-        thresholds=soil_thresholds,
-        threshold_source=soil_threshold_source,
-    )
+    try:
+        soil_assessment = assess_soil(
+            values["N"],
+            values["P"],
+            values["K"],
+            values["ph"],
+            thresholds=soil_thresholds,
+            threshold_source=soil_threshold_source,
+        )
+    except Exception:
+        # The crop ranking is produced solely by the fitted model.  A future
+        # malformed optional threshold configuration must not suppress it.
+        LOGGER.exception("Independent soil assessment could not be produced")
+        soil_assessment = {
+            "nitrogen_status": "Unavailable",
+            "phosphorus_status": "Unavailable",
+            "potassium_status": "Unavailable",
+            "ph_status": "Unavailable",
+            "overall_assessment": "Unavailable",
+            "thresholds_verified": False,
+            "threshold_source": "Assessment unavailable; scientific verification required.",
+            "verification_notice": (
+                "The independent soil assessment could not be produced. The model "
+                "recommendation and probabilities were not changed."
+            ),
+            "assessment_error": True,
+        }
 
     return {
         "predicted_crop": prediction["predicted_crop"],

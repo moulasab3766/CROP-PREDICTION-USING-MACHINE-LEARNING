@@ -10,17 +10,33 @@ from __future__ import annotations
 import argparse
 import json
 import math
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
+from functools import lru_cache
 from pathlib import Path
+from time import perf_counter
 from typing import Any
 
 import numpy as np
 import pandas as pd
 
 try:  # Supports module and direct-script execution.
-    from src.predict import DEFAULT_MODEL_PATH, FEATURE_NAMES, load_model
+    from src.predict import (
+        DEFAULT_MODEL_PATH,
+        FEATURE_NAMES,
+        load_artifacts,
+        load_model,
+        predict_crop,
+        validate_features,
+    )
 except ImportError:  # pragma: no cover - direct script use
-    from predict import DEFAULT_MODEL_PATH, FEATURE_NAMES, load_model
+    from predict import (
+        DEFAULT_MODEL_PATH,
+        FEATURE_NAMES,
+        load_artifacts,
+        load_model,
+        predict_crop,
+        validate_features,
+    )
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -28,6 +44,208 @@ DEFAULT_IMPORTANCE_CSV_PATH = PROJECT_ROOT / "results" / "global_feature_importa
 DEFAULT_IMPORTANCE_CHART_PATH = (
     PROJECT_ROOT / "results" / "global_feature_importance.png"
 )
+
+
+def normalize_multiclass_shap(
+    raw_values: Any,
+    *,
+    n_samples: int,
+    n_features: int,
+    n_classes: int,
+) -> np.ndarray:
+    """Normalize supported SHAP versions to samples × features × classes."""
+
+    if isinstance(raw_values, list):
+        if len(raw_values) != n_classes:
+            raise ValueError("SHAP class-list length does not match model classes.")
+        arrays = [np.asarray(values, dtype=float) for values in raw_values]
+        if any(values.shape != (n_samples, n_features) for values in arrays):
+            raise ValueError("A class-specific SHAP matrix has an unexpected shape.")
+        normalized = np.stack(arrays, axis=-1)
+    else:
+        normalized = np.asarray(raw_values, dtype=float)
+        if normalized.shape == (n_classes, n_samples, n_features):
+            normalized = np.moveaxis(normalized, 0, -1)
+    expected = (n_samples, n_features, n_classes)
+    if normalized.shape != expected:
+        raise ValueError(
+            f"Expected multiclass SHAP shape {expected}, found {normalized.shape}."
+        )
+    if not np.isfinite(normalized).all():
+        raise ValueError("SHAP contributions contain non-finite values.")
+    return normalized
+
+
+def contribution_records(
+    feature_values: Sequence[float],
+    contributions: Sequence[float],
+    *,
+    feature_names: Sequence[str] = FEATURE_NAMES,
+) -> list[dict[str, Any]]:
+    """Create absolute-magnitude-sorted local contribution records."""
+
+    values = np.asarray(feature_values, dtype=float)
+    shap_values = np.asarray(contributions, dtype=float)
+    if values.shape != (len(feature_names),) or shap_values.shape != (
+        len(feature_names),
+    ):
+        raise ValueError("Feature values and SHAP contributions must match feature order.")
+    order = np.argsort(-np.abs(shap_values), kind="stable")
+    return [
+        {
+            "feature": str(feature_names[index]),
+            "feature_value": float(values[index]),
+            "shap_contribution": float(shap_values[index]),
+            "direction": "supports" if shap_values[index] >= 0 else "opposes",
+        }
+        for index in order
+    ]
+
+
+def local_explanation_text(
+    predicted_crop: str,
+    records: Sequence[Mapping[str, Any]],
+    *,
+    limit: int = 3,
+) -> str:
+    """Create deterministic, non-causal wording for a local explanation."""
+
+    if isinstance(limit, bool) or not isinstance(limit, int) or limit < 1:
+        raise ValueError("Explanation limit must be a positive integer.")
+    strongest = list(records)[:limit]
+    details = "; ".join(
+        f"{row['feature']} ({row['direction']} the predicted-class model score, "
+        f"SHAP {float(row['shap_contribution']):+.6f})"
+        for row in strongest
+    )
+    return (
+        f"Predicted crop: {predicted_crop}. Strongest model contributions: {details}. "
+        "These values explain model behavior for this input; they are not causal "
+        "agronomic effects or proof of crop suitability."
+    )
+
+
+def format_feature_value(feature: str, value: Any) -> str:
+    """Format an input value without inventing units for N, P, or K."""
+
+    try:
+        number = float(value)
+    except (TypeError, ValueError) as exc:
+        raise ValueError(f"Feature value for {feature} must be numeric.") from exc
+    if not math.isfinite(number):
+        raise ValueError(f"Feature value for {feature} must be finite.")
+    if feature == "temperature":
+        return f"{number:.1f} °C"
+    if feature == "humidity":
+        return f"{number:.1f}%"
+    if feature == "ph":
+        return f"{number:.2f} pH"
+    if feature == "rainfall":
+        return f"{number:.1f} mm"
+    if feature in {"N", "P", "K"}:
+        return f"{number:g} (dataset-scale value)"
+    return f"{number:g}"
+
+
+@lru_cache(maxsize=4)
+def _tree_explainer_for_model(model: Any) -> Any:
+    """Cache only the explainer; never cache or retain a user's feature values."""
+
+    import shap
+
+    return shap.TreeExplainer(model)
+
+
+def clear_local_explainer_cache() -> None:
+    """Clear cached SHAP explainers, primarily for artifact-replacement tests."""
+
+    _tree_explainer_for_model.cache_clear()
+
+
+def generate_local_explanation(
+    values: Mapping[str, Any] | Sequence[Any],
+    *,
+    predicted_crop: str | None = None,
+    top_n: int = 5,
+    model: Any | None = None,
+    label_encoder: Any | None = None,
+    explainer: Any | None = None,
+) -> dict[str, Any]:
+    """Explain the predicted class for one input using the baseline RF and SHAP.
+
+    The explanation is deterministic model attribution, not causal or agronomic
+    advice.  The function does not save a plot, mutate artifacts, or train a model.
+    """
+
+    started = perf_counter()
+    canonical = validate_features(values)
+    if isinstance(top_n, bool) or not isinstance(top_n, int) or not 1 <= top_n <= len(
+        FEATURE_NAMES
+    ):
+        raise ValueError(f"top_n must be between 1 and {len(FEATURE_NAMES)}.")
+    if (model is None) != (label_encoder is None):
+        raise ValueError("Provide both model and label_encoder, or neither.")
+    if model is None:
+        model, label_encoder = load_artifacts()
+
+    if predicted_crop is None:
+        predicted_crop = str(
+            predict_crop(canonical, model=model, label_encoder=label_encoder)[
+                "predicted_crop"
+            ]
+        )
+    frame = pd.DataFrame(
+        [[canonical[name] for name in FEATURE_NAMES]], columns=FEATURE_NAMES
+    )
+    encoded_classes = np.asarray(model.classes_)
+    try:
+        decoded_classes = np.asarray(label_encoder.inverse_transform(encoded_classes))
+    except Exception as exc:
+        raise ValueError("Model classes cannot be decoded for local explanation.") from exc
+    matches = np.flatnonzero(decoded_classes.astype(str) == str(predicted_crop))
+    if len(matches) != 1:
+        raise ValueError("Predicted crop does not map to exactly one SHAP output class.")
+    predicted_column = int(matches[0])
+
+    active_explainer = explainer or _tree_explainer_for_model(model)
+    raw_values = active_explainer.shap_values(frame)
+    normalized = normalize_multiclass_shap(
+        raw_values,
+        n_samples=1,
+        n_features=len(FEATURE_NAMES),
+        n_classes=len(encoded_classes),
+    )
+    records = contribution_records(
+        [canonical[name] for name in FEATURE_NAMES],
+        normalized[0, :, predicted_column],
+    )
+    enriched = [
+        {
+            **record,
+            "formatted_value": format_feature_value(
+                str(record["feature"]), record["feature_value"]
+            ),
+            "direction_label": (
+                "Supports prediction"
+                if record["direction"] == "supports"
+                else "Opposes prediction"
+            ),
+        }
+        for record in records
+    ]
+    title_crop = str(predicted_crop).replace("_", " ").title()
+    return {
+        "predicted_crop": str(predicted_crop),
+        "heading": f"Why did the model recommend {title_crop}?",
+        "top_contributions": enriched[:top_n],
+        "all_contributions": enriched,
+        "text": local_explanation_text(str(predicted_crop), records, limit=top_n),
+        "explanation_latency_ms": float((perf_counter() - started) * 1000.0),
+        "scope_notice": (
+            "SHAP describes how this model scored this input. It does not establish "
+            "agricultural causality, soil quality, or guaranteed crop suitability."
+        ),
+    }
 
 
 def _importance_records(model: Any) -> list[dict[str, float | str]]:
