@@ -1,0 +1,274 @@
+{
+  "experiment": "Random Forest reliability evaluation",
+  "dataset_path": "C:\\Users\\hp\\Documents\\Codex\\2026-08-21\\npm-i-g-openai-codex\\data\\Crop_recommendation.csv",
+  "model_path": "C:\\Users\\hp\\Documents\\Codex\\2026-08-21\\npm-i-g-openai-codex\\models\\random_forest_crop.joblib",
+  "label_encoder_path": "C:\\Users\\hp\\Documents\\Codex\\2026-08-21\\npm-i-g-openai-codex\\models\\label_encoder.joblib",
+  "feature_order": [
+    "N",
+    "P",
+    "K",
+    "temperature",
+    "humidity",
+    "ph",
+    "rainfall"
+  ],
+  "class_names": [
+    "apple",
+    "banana",
+    "blackgram",
+    "chickpea",
+    "coconut",
+    "coffee",
+    "cotton",
+    "grapes",
+    "jute",
+    "kidneybeans",
+    "lentil",
+    "maize",
+    "mango",
+    "mothbeans",
+    "mungbean",
+    "muskmelon",
+    "orange",
+    "papaya",
+    "pigeonpeas",
+    "pomegranate",
+    "rice",
+    "watermelon"
+  ],
+  "split": {
+    "test_size": 0.2,
+    "random_state": 42,
+    "stratified": true,
+    "training_samples": 1760,
+    "test_samples": 440
+  },
+  "held_out_test_metrics": {
+    "accuracy": 0.9954545454545455,
+    "correct_predictions": 438,
+    "incorrect_predictions": 2,
+    "sample_count": 440,
+    "macro_precision": 0.9956709956709957,
+    "macro_recall": 0.9954545454545454,
+    "macro_f1": 0.9954517027687758,
+    "weighted_precision": 0.9956709956709956,
+    "weighted_recall": 0.9954545454545455,
+    "weighted_f1": 0.9954517027687759
+  },
+  "classification_report": {
+    "apple": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 20.0
+    },
+    "banana": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 20.0
+    },
+    "blackgram": {
+      "precision": 1.0,
+      "recall": 0.95,
+      "f1-score": 0.9743589743589743,
+      "support": 20.0
+    },
+    "chickpea": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 20.0
+    },
+    "coconut": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 20.0
+    },
+    "coffee": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 20.0
+    },
+    "cotton": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 20.0
+    },
+    "grapes": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 20.0
+    },
+    "jute": {
+      "precision": 0.9523809523809523,
+      "recall": 1.0,
+      "f1-score": 0.975609756097561,
+      "support": 20.0
+    },
+    "kidneybeans": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 20.0
+    },
+    "lentil": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 20.0
+    },
+    "maize": {
+      "precision": 0.9523809523809523,
+      "recall": 1.0,
+      "f1-score": 0.975609756097561,
+      "support": 20.0
+    },
+    "mango": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 20.0
+    },
+    "mothbeans": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 20.0
+    },
+    "mungbean": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 20.0
+    },
+    "muskmelon": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 20.0
+    },
+    "orange": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 20.0
+    },
+    "papaya": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 20.0
+    },
+    "pigeonpeas": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 20.0
+    },
+    "pomegranate": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 20.0
+    },
+    "rice": {
+      "precision": 1.0,
+      "recall": 0.95,
+      "f1-score": 0.9743589743589743,
+      "support": 20.0
+    },
+    "watermelon": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 20.0
+    },
+    "accuracy": 0.9954545454545455,
+    "macro avg": {
+      "precision": 0.9956709956709957,
+      "recall": 0.9954545454545454,
+      "f1-score": 0.9954517027687758,
+      "support": 440.0
+    },
+    "weighted avg": {
+      "precision": 0.9956709956709956,
+      "recall": 0.9954545454545455,
+      "f1-score": 0.9954517027687759,
+      "support": 440.0
+    }
+  },
+  "misclassification_count": 2,
+  "misclassifications": [
+    {
+      "dataset_row_index": 789,
+      "actual_crop": "blackgram",
+      "predicted_crop": "maize",
+      "features": {
+        "N": 60.0,
+        "P": 59.0,
+        "K": 22.0,
+        "temperature": 31.86847286,
+        "humidity": 66.74217464,
+        "ph": 7.191522601,
+        "rainfall": 74.22238583
+      }
+    },
+    {
+      "dataset_row_index": 83,
+      "actual_crop": "rice",
+      "predicted_crop": "jute",
+      "features": {
+        "N": 67.0,
+        "P": 43.0,
+        "K": 39.0,
+        "temperature": 26.04371967,
+        "humidity": 84.96907151,
+        "ph": 5.9999690260000005,
+        "rainfall": 186.7536773
+      }
+    }
+  ],
+  "cross_validation": {
+    "method": "StratifiedKFold",
+    "partition": "training_partition_only",
+    "n_splits": 5,
+    "shuffle": true,
+    "random_state": 42,
+    "scoring": "accuracy",
+    "training_sample_count": 1760,
+    "fold_accuracies": [
+      1.0,
+      0.9971590909090909,
+      0.9829545454545454,
+      0.9914772727272727,
+      0.9971590909090909
+    ],
+    "mean_accuracy": 0.99375,
+    "standard_deviation": 0.006066521734108723,
+    "held_out_minus_cv_mean": 0.0017045454545454586
+  },
+  "leakage_check": {
+    "overlap_detected": false,
+    "overlapping_unique_feature_vectors": 0,
+    "training_rows_with_overlap": 0,
+    "test_rows_with_overlap": 0,
+    "cross_partition_matching_pairs": 0,
+    "compared_feature_count": 7
+  },
+  "leakage_prevention": "The held-out test partition was excluded from fitting and from five-fold cross-validation. Random Forest needs no scaler; model clones were fitted independently inside training-only CV folds.",
+  "limitations": [
+    "High accuracy on this public dataset does not guarantee real-world performance.",
+    "External validation on independent agricultural data is still required."
+  ],
+  "artifacts": {
+    "confusion_matrix_image": "C:\\Users\\hp\\Documents\\Codex\\2026-08-21\\npm-i-g-openai-codex\\results\\confusion_matrix.png",
+    "confusion_matrix_csv": "C:\\Users\\hp\\Documents\\Codex\\2026-08-21\\npm-i-g-openai-codex\\results\\confusion_matrix.csv",
+    "classification_report": "C:\\Users\\hp\\Documents\\Codex\\2026-08-21\\npm-i-g-openai-codex\\results\\classification_report.txt",
+    "evaluation_results": "C:\\Users\\hp\\Documents\\Codex\\2026-08-21\\npm-i-g-openai-codex\\results\\evaluation_results.json"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "dataset_handle": "atharvaingle/crop-recommendation-dataset",
+  "dataset_file": "Crop_recommendation.csv",
+  "kaggle_version": 1,
+  "license": "Apache 2.0",
+  "downloaded_on": "2026-08-21",
+  "byte_size": 150034,
+  "sha256": "54a5a6e5408668e668667efc50de2fc867c1b875e0431b4f54dd331b0a109a4e"
+}
+

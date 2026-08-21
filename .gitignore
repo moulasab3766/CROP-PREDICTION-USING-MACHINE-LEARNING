@@ -1,0 +1,24 @@
+# Python caches and compiled files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Local environments and secrets
+.venv/
+.env
+.env.*
+!.env.example
+.streamlit/secrets.toml
+
+# Notebook, test, and tool caches
+.ipynb_checkpoints/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+work/
+
+# OS and editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

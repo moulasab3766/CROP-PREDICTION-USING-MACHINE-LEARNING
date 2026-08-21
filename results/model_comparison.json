@@ -1,0 +1,156 @@
+{
+  "experiment": "Six-model held-out comparison",
+  "dataset_path": "C:\\Users\\hp\\Documents\\Codex\\2026-08-21\\npm-i-g-openai-codex\\data\\Crop_recommendation.csv",
+  "feature_order": [
+    "N",
+    "P",
+    "K",
+    "temperature",
+    "humidity",
+    "ph",
+    "rainfall"
+  ],
+  "split": {
+    "test_size": 0.2,
+    "random_state": 42,
+    "stratified": true,
+    "training_samples": 1760,
+    "test_samples": 440,
+    "shared_by_all_models": true
+  },
+  "scaling": {
+    "training_partition_only": true,
+    "scaled_inside_pipeline": [
+      "Logistic Regression",
+      "K-Nearest Neighbors",
+      "Support Vector Machine"
+    ],
+    "not_scaled": [
+      "Decision Tree",
+      "Gaussian Naive Bayes",
+      "Random Forest"
+    ]
+  },
+  "metrics": [
+    "accuracy",
+    "macro_precision",
+    "macro_recall",
+    "macro_f1",
+    "weighted_precision",
+    "weighted_recall",
+    "weighted_f1"
+  ],
+  "results": [
+    {
+      "model": "Random Forest",
+      "accuracy": 0.9954545454545455,
+      "macro_precision": 0.9956709956709957,
+      "macro_recall": 0.9954545454545454,
+      "macro_f1": 0.9954517027687758,
+      "weighted_precision": 0.9956709956709956,
+      "weighted_recall": 0.9954545454545455,
+      "weighted_f1": 0.9954517027687759,
+      "rank": 1
+    },
+    {
+      "model": "Gaussian Naive Bayes",
+      "accuracy": 0.9954545454545455,
+      "macro_precision": 0.9958677685950413,
+      "macro_recall": 0.9954545454545454,
+      "macro_f1": 0.9954431533378901,
+      "weighted_precision": 0.9958677685950413,
+      "weighted_recall": 0.9954545454545455,
+      "weighted_f1": 0.9954431533378901,
+      "rank": 2
+    },
+    {
+      "model": "Support Vector Machine",
+      "accuracy": 0.9840909090909091,
+      "macro_precision": 0.9856099105110961,
+      "macro_recall": 0.9840909090909092,
+      "macro_f1": 0.9840381050638686,
+      "weighted_precision": 0.9856099105110961,
+      "weighted_recall": 0.9840909090909091,
+      "weighted_f1": 0.9840381050638686,
+      "rank": 3
+    },
+    {
+      "model": "Decision Tree",
+      "accuracy": 0.9795454545454545,
+      "macro_precision": 0.9805981896890987,
+      "macro_recall": 0.9795454545454546,
+      "macro_f1": 0.9794231513743707,
+      "weighted_precision": 0.9805981896890988,
+      "weighted_recall": 0.9795454545454545,
+      "weighted_f1": 0.979423151374371,
+      "rank": 4
+    },
+    {
+      "model": "K-Nearest Neighbors",
+      "accuracy": 0.9795454545454545,
+      "macro_precision": 0.9803555030827759,
+      "macro_recall": 0.9795454545454544,
+      "macro_f1": 0.9792832328133997,
+      "weighted_precision": 0.9803555030827759,
+      "weighted_recall": 0.9795454545454545,
+      "weighted_f1": 0.9792832328133997,
+      "rank": 5
+    },
+    {
+      "model": "Logistic Regression",
+      "accuracy": 0.9727272727272728,
+      "macro_precision": 0.9740217299040829,
+      "macro_recall": 0.9727272727272727,
+      "macro_f1": 0.9724640256149183,
+      "weighted_precision": 0.974021729904083,
+      "weighted_recall": 0.9727272727272728,
+      "weighted_f1": 0.9724640256149185,
+      "rank": 6
+    }
+  ],
+  "selection": {
+    "status": "selected_after_tie_break",
+    "selected_model": "Random Forest",
+    "reason": "Held-out accuracy was tied among Gaussian Naive Bayes, Random Forest at 0.995455. Random Forest was selected using macro_f1 after applying macro F1 first and the remaining reported metrics only as needed.",
+    "highest_test_accuracy": 0.9954545454545455,
+    "highest_accuracy_models": [
+      "Gaussian Naive Bayes",
+      "Random Forest"
+    ],
+    "highest_macro_f1": 0.9954517027687758,
+    "highest_macro_f1_models": [
+      "Random Forest"
+    ],
+    "tie_break_trace": [
+      {
+        "metric": "macro_f1",
+        "best_value_among_remaining": 0.9954517027687758,
+        "remaining_models": [
+          "Random Forest"
+        ]
+      }
+    ],
+    "unresolved_tied_models": []
+  },
+  "leakage_check": {
+    "overlap_detected": false,
+    "overlapping_unique_feature_vectors": 0,
+    "training_rows_with_overlap": 0,
+    "test_rows_with_overlap": 0,
+    "cross_partition_matching_pairs": 0,
+    "compared_feature_count": 7
+  },
+  "limitations": [
+    "High accuracy on this public dataset does not establish real-world agricultural performance.",
+    "External validation is required before field deployment.",
+    "A tied accuracy is reported as a tie and is not presented as a unique accuracy win."
+  ],
+  "artifacts": {
+    "comparison_csv": "C:\\Users\\hp\\Documents\\Codex\\2026-08-21\\npm-i-g-openai-codex\\results\\model_comparison.csv",
+    "comparison_json": "C:\\Users\\hp\\Documents\\Codex\\2026-08-21\\npm-i-g-openai-codex\\results\\model_comparison.json",
+    "accuracy_chart": "C:\\Users\\hp\\Documents\\Codex\\2026-08-21\\npm-i-g-openai-codex\\results\\model_accuracy_comparison.png",
+    "random_forest_model": "C:\\Users\\hp\\Documents\\Codex\\2026-08-21\\npm-i-g-openai-codex\\models\\random_forest_crop.joblib",
+    "label_encoder": "C:\\Users\\hp\\Documents\\Codex\\2026-08-21\\npm-i-g-openai-codex\\models\\label_encoder.joblib",
+    "selected_model": "C:\\Users\\hp\\Documents\\Codex\\2026-08-21\\npm-i-g-openai-codex\\models\\selected_crop_model.joblib"
+  }
+}
