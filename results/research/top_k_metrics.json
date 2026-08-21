@@ -1,0 +1,58 @@
+{
+  "artifacts": {
+    "accuracy_plot": "results/research/top_k_accuracy.png",
+    "predictions_csv": "results/research/top_k_predictions.csv"
+  },
+  "baseline_model_sha256_after": "696a33f64fa525af4391466dbde394792589f6ecf7d0a26cdea584f321f2b3f6",
+  "baseline_model_sha256_before": "696a33f64fa525af4391466dbde394792589f6ecf7d0a26cdea584f321f2b3f6",
+  "experiment": "Scientific Top-K evaluation",
+  "limitations": [
+    "The probabilities are raw model outputs and are not guaranteed confidence.",
+    "Results apply only to this dataset and fixed split.",
+    "Top-K ranking is a decision-support enhancement, not a novel classifier."
+  ],
+  "methodology": {
+    "baseline_model_retrained": false,
+    "class_order_verified_against_saved_encoder": true,
+    "held_out_samples": 440,
+    "probability_source": "RandomForestClassifier.predict_proba",
+    "top_k_interpretation": "Decision-support alternatives from model probability ranking; not evidence that crops are agronomically equivalent."
+  },
+  "metrics": {
+    "additional_correct_top_1_to_2": 2,
+    "additional_correct_top_2_to_3": 0,
+    "class_count": 22,
+    "outside_top_3_count": 0,
+    "probability_matrix_shape": [
+      440,
+      22
+    ],
+    "sample_count": 440,
+    "top_1_accuracy": 0.9954545454545455,
+    "top_1_correct_count": 438,
+    "top_1_minus_top_2_margin": {
+      "definition": "top_1_probability - top_2_probability",
+      "mean": 0.9290909090909091,
+      "mean_when_correct": 0.9317351598173517,
+      "mean_when_incorrect": 0.35,
+      "median": 0.98,
+      "near_tie_count": 0,
+      "near_tie_threshold": 0.05
+    },
+    "top_1_probability": {
+      "maximum": 1.0,
+      "mean": 0.9578863636363637,
+      "mean_when_correct": 0.9593607305936073,
+      "mean_when_incorrect": 0.635,
+      "median": 0.99,
+      "minimum": 0.55
+    },
+    "top_2_accuracy": 1.0,
+    "top_2_correct_count": 440,
+    "top_3_accuracy": 1.0,
+    "top_3_correct_count": 440,
+    "top_5_accuracy": 1.0,
+    "top_5_correct_count": 440
+  },
+  "outside_top_3_samples": []
+}

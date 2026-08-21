@@ -1,0 +1,34 @@
+{
+  "agreement_definition": "agreement_count is the number of models voting for the modal crop; ties in the modal crop name are broken alphabetically only for deterministic reporting.",
+  "agreement_distribution": {
+    "1": 0,
+    "2": 0,
+    "3": 2,
+    "4": 8,
+    "5": 13,
+    "6": 417
+  },
+  "artifacts": {
+    "csv": "results/research/model_disagreement.csv",
+    "plot": "results/research/model_disagreement.png"
+  },
+  "experiment": "Inter-model disagreement using original six classifier definitions",
+  "five_of_six_count": 13,
+  "four_of_six_count": 8,
+  "interpretation": "This is inter-model disagreement among six established classifiers, not a formal posterior uncertainty estimate.",
+  "limitations": [
+    "The six models are not independent samples from a probabilistic model family.",
+    "Agreement can be high even when all models share dataset-specific biases.",
+    "Results apply only to the fixed benchmark split and model definitions."
+  ],
+  "low_agreement_at_most_four_count": 10,
+  "mean_rf_probability_by_agreement": {
+    "3": 0.77,
+    "4": 0.76,
+    "5": 0.7984615384615383,
+    "6": 0.9675539568345323
+  },
+  "sample_count": 440,
+  "six_of_six_count": 417,
+  "spearman_rf_margin_vs_agreement_count": 0.328585824224935
+}

@@ -1,0 +1,3 @@
+test_position,source_row_index,actual_crop,predicted_crop,top_1_probability,second_crop,second_probability,third_crop,third_probability,top_1_vs_top_2_margin,true_crop_in_top_3,agreement_count,models_agreeing_with_random_forest,strongest_predicted_class_shap_feature,strongest_predicted_class_shap_contribution,strongest_predicted_class_shap_direction
+178,789,blackgram,maize,0.580000000000,blackgram,0.260000000000,cotton,0.040000000000,0.320000000000,True,4,2,N,0.239976764053,supports
+378,83,rice,jute,0.690000000000,rice,0.310000000000,apple,0.000000000000,0.380000000000,True,6,6,rainfall,0.186068236136,supports

@@ -1,0 +1,112 @@
+{
+  "artifacts": {
+    "all_candidates_csv": "results/research/rf_hyperparameter_search.csv",
+    "best_parameters_json": "results/research/rf_best_parameters.json",
+    "comparison_csv": "results/research/baseline_vs_tuned.csv",
+    "confusion_csv": "results/research/tuned_confusion_matrix.csv",
+    "confusion_plot": "results/research/tuned_confusion_matrix.png",
+    "tuned_model": "models/research/random_forest_tuned.joblib"
+  },
+  "baseline_metrics": {
+    "accuracy": 0.9954545454545455,
+    "log_loss": 0.050389417279776076,
+    "macro_f1": 0.9954517027687758,
+    "macro_precision": 0.9956709956709957,
+    "macro_recall": 0.9954545454545454,
+    "mean_top_probability": 0.9578863636363637,
+    "mean_true_class_probability": 0.9562954545454545,
+    "multiclass_brier_score": 0.014724999999999999,
+    "weighted_f1": 0.9954517027687759
+  },
+  "baseline_model_sha256_after": "696a33f64fa525af4391466dbde394792589f6ecf7d0a26cdea584f321f2b3f6",
+  "baseline_model_sha256_before": "696a33f64fa525af4391466dbde394792589f6ecf7d0a26cdea584f321f2b3f6",
+  "best_parameters": {
+    "class_weight": "balanced",
+    "max_depth": null,
+    "max_features": "sqrt",
+    "min_samples_leaf": 1,
+    "min_samples_split": 10,
+    "n_estimators": 200
+  },
+  "experiment": "Training-only RandomizedSearchCV for Random Forest",
+  "held_out_accuracy_delta": 0.0,
+  "held_out_macro_f1_delta": 0.0,
+  "limitations": [
+    "The bounded search is not an exhaustive optimization of all RF configurations.",
+    "The held-out set was used once after training-only model selection.",
+    "Small metric differences are reported exactly and not treated as universal gains."
+  ],
+  "methodology": {
+    "best_parameters": {
+      "class_weight": "balanced",
+      "max_depth": null,
+      "max_features": "sqrt",
+      "min_samples_leaf": 1,
+      "min_samples_split": 10,
+      "n_estimators": 200
+    },
+    "best_training_cv_macro_f1": 0.9954333087080703,
+    "corresponding_training_cv_accuracy": 0.9954545454545454,
+    "cv": {
+      "folds": 5,
+      "random_state": 42,
+      "shuffle": true,
+      "type": "StratifiedKFold"
+    },
+    "held_out_labels_used_in_search": false,
+    "optimization_metric": "macro_f1",
+    "quick_mode": false,
+    "random_seed": 42,
+    "search_iterations": 16,
+    "search_space": {
+      "class_weight": [
+        null,
+        "balanced"
+      ],
+      "max_depth": [
+        null,
+        8,
+        12,
+        16,
+        24
+      ],
+      "max_features": [
+        "sqrt",
+        "log2",
+        null,
+        0.75
+      ],
+      "min_samples_leaf": [
+        1,
+        2,
+        3,
+        5
+      ],
+      "min_samples_split": [
+        2,
+        4,
+        6,
+        10
+      ],
+      "n_estimators": [
+        100,
+        150,
+        200,
+        300
+      ]
+    },
+    "secondary_metric": "accuracy"
+  },
+  "outcome_by_held_out_macro_f1": "tied",
+  "tuned_metrics": {
+    "accuracy": 0.9954545454545455,
+    "log_loss": 0.0628550485140991,
+    "macro_f1": 0.9954517027687758,
+    "macro_precision": 0.9956709956709957,
+    "macro_recall": 0.9954545454545454,
+    "mean_top_probability": 0.9463614576708239,
+    "mean_true_class_probability": 0.9451474382577113,
+    "multiclass_brier_score": 0.01760953898960906,
+    "weighted_f1": 0.9954517027687759
+  }
+}

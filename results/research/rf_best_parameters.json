@@ -1,0 +1,61 @@
+{
+  "best_parameters": {
+    "class_weight": "balanced",
+    "max_depth": null,
+    "max_features": "sqrt",
+    "min_samples_leaf": 1,
+    "min_samples_split": 10,
+    "n_estimators": 200
+  },
+  "best_training_cv_macro_f1": 0.9954333087080703,
+  "corresponding_training_cv_accuracy": 0.9954545454545454,
+  "cv": {
+    "folds": 5,
+    "random_state": 42,
+    "shuffle": true,
+    "type": "StratifiedKFold"
+  },
+  "held_out_labels_used_in_search": false,
+  "optimization_metric": "macro_f1",
+  "quick_mode": false,
+  "random_seed": 42,
+  "search_iterations": 16,
+  "search_space": {
+    "class_weight": [
+      null,
+      "balanced"
+    ],
+    "max_depth": [
+      null,
+      8,
+      12,
+      16,
+      24
+    ],
+    "max_features": [
+      "sqrt",
+      "log2",
+      null,
+      0.75
+    ],
+    "min_samples_leaf": [
+      1,
+      2,
+      3,
+      5
+    ],
+    "min_samples_split": [
+      2,
+      4,
+      6,
+      10
+    ],
+    "n_estimators": [
+      100,
+      150,
+      200,
+      300
+    ]
+  },
+  "secondary_metric": "accuracy"
+}

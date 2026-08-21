@@ -1,0 +1,170 @@
+[
+  {
+    "contributions": [
+      {
+        "direction": "supports",
+        "feature": "K",
+        "feature_value": 6.0,
+        "shap_contribution": 0.33789819294010326
+      },
+      {
+        "direction": "supports",
+        "feature": "humidity",
+        "feature_value": 90.26408017,
+        "shap_contribution": 0.174733335614123
+      },
+      {
+        "direction": "supports",
+        "feature": "P",
+        "feature_value": 23.0,
+        "shap_contribution": 0.15999842707799675
+      },
+      {
+        "direction": "supports",
+        "feature": "rainfall",
+        "feature_value": 102.6958703,
+        "shap_contribution": 0.11090501748123638
+      },
+      {
+        "direction": "supports",
+        "feature": "N",
+        "feature_value": 13.0,
+        "shap_contribution": 0.10112215322363914
+      },
+      {
+        "direction": "supports",
+        "feature": "ph",
+        "feature_value": 7.365338111,
+        "shap_contribution": 0.03132544895283004
+      },
+      {
+        "direction": "supports",
+        "feature": "temperature",
+        "feature_value": 23.96147583,
+        "shap_contribution": 0.008199242891889884
+      }
+    ],
+    "correct": true,
+    "model_probability": 0.97,
+    "predicted_crop": "orange",
+    "predicted_encoded_class": 16,
+    "sample_position": 0,
+    "selection": "Correctly predicted example",
+    "source_row_index": 1609,
+    "text": "Predicted crop: orange. Strongest model contributions: K (supports the predicted-class model score, SHAP +0.337898); humidity (supports the predicted-class model score, SHAP +0.174733); P (supports the predicted-class model score, SHAP +0.159998). These values explain model behavior for this input; they are not causal agronomic effects or proof of crop suitability.",
+    "top_1_minus_top_2_margin": 0.94,
+    "true_crop": "orange"
+  },
+  {
+    "contributions": [
+      {
+        "direction": "supports",
+        "feature": "rainfall",
+        "feature_value": 45.36521251,
+        "shap_contribution": 0.22570634897917077
+      },
+      {
+        "direction": "supports",
+        "feature": "humidity",
+        "feature_value": 60.19461399,
+        "shap_contribution": 0.1464975005110512
+      },
+      {
+        "direction": "supports",
+        "feature": "N",
+        "feature_value": 31.0,
+        "shap_contribution": 0.06241372556816778
+      },
+      {
+        "direction": "supports",
+        "feature": "K",
+        "feature_value": 15.0,
+        "shap_contribution": 0.057254021217889674
+      },
+      {
+        "direction": "supports",
+        "feature": "ph",
+        "feature_value": 6.167855382000001,
+        "shap_contribution": 0.03036533319560927
+      },
+      {
+        "direction": "opposes",
+        "feature": "temperature",
+        "feature_value": 28.31886863,
+        "shap_contribution": -0.029998110839569683
+      },
+      {
+        "direction": "supports",
+        "feature": "P",
+        "feature_value": 58.0,
+        "shap_contribution": 0.011664590458589906
+      }
+    ],
+    "correct": true,
+    "model_probability": 0.55,
+    "predicted_crop": "lentil",
+    "predicted_encoded_class": 10,
+    "sample_position": 207,
+    "selection": "Lowest-margin distinct example",
+    "source_row_index": 838,
+    "text": "Predicted crop: lentil. Strongest model contributions: rainfall (supports the predicted-class model score, SHAP +0.225706); humidity (supports the predicted-class model score, SHAP +0.146498); N (supports the predicted-class model score, SHAP +0.062414). These values explain model behavior for this input; they are not causal agronomic effects or proof of crop suitability.",
+    "top_1_minus_top_2_margin": 0.20000000000000007,
+    "true_crop": "lentil"
+  },
+  {
+    "contributions": [
+      {
+        "direction": "supports",
+        "feature": "N",
+        "feature_value": 60.0,
+        "shap_contribution": 0.23997676405255566
+      },
+      {
+        "direction": "supports",
+        "feature": "humidity",
+        "feature_value": 66.74217464,
+        "shap_contribution": 0.14914913461725704
+      },
+      {
+        "direction": "supports",
+        "feature": "K",
+        "feature_value": 22.0,
+        "shap_contribution": 0.10542014635721658
+      },
+      {
+        "direction": "supports",
+        "feature": "rainfall",
+        "feature_value": 74.22238583,
+        "shap_contribution": 0.09962422288207548
+      },
+      {
+        "direction": "opposes",
+        "feature": "temperature",
+        "feature_value": 31.86847286,
+        "shap_contribution": -0.0630818396264762
+      },
+      {
+        "direction": "supports",
+        "feature": "P",
+        "feature_value": 59.0,
+        "shap_contribution": 0.039450258782846276
+      },
+      {
+        "direction": "opposes",
+        "feature": "ph",
+        "feature_value": 7.191522601,
+        "shap_contribution": -0.036010277974565665
+      }
+    ],
+    "correct": false,
+    "model_probability": 0.58,
+    "predicted_crop": "maize",
+    "predicted_encoded_class": 11,
+    "sample_position": 178,
+    "selection": "Misclassified example",
+    "source_row_index": 789,
+    "text": "Predicted crop: maize. Strongest model contributions: N (supports the predicted-class model score, SHAP +0.239977); humidity (supports the predicted-class model score, SHAP +0.149149); K (supports the predicted-class model score, SHAP +0.105420). These values explain model behavior for this input; they are not causal agronomic effects or proof of crop suitability.",
+    "top_1_minus_top_2_margin": 0.31999999999999995,
+    "true_crop": "blackgram"
+  }
+]

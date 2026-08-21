@@ -1,0 +1,121 @@
+{
+  "artifacts": {
+    "csv": "results/research/feature_ablation.csv",
+    "plot": "results/research/feature_ablation.png"
+  },
+  "evidence_distinction": "Ablation performance, RF impurity importance, and global SHAP importance measure different aspects of model behavior and are compared separately.",
+  "experiment": "Leave-one-feature-out Random Forest ablation",
+  "interpretation": "Ablation measures dependence of this fitted model family on a feature under the benchmark split; it does not establish agricultural causality.",
+  "largest_macro_f1_degradation": {
+    "accuracy": 0.9681818181818181,
+    "accuracy_delta": -0.027272727272727337,
+    "configuration": "Without Rainfall",
+    "feature_count": 6,
+    "feature_order": "N|P|K|temperature|humidity|ph",
+    "macro_f1": 0.967836993787079,
+    "macro_f1_delta": -0.027614708981696823,
+    "macro_precision": 0.9690899060893341,
+    "macro_recall": 0.9681818181818183,
+    "removed_feature": "rainfall"
+  },
+  "removals_improving_macro_f1": [],
+  "rows": [
+    {
+      "accuracy": 0.9954545454545455,
+      "accuracy_delta": 0.0,
+      "configuration": "All 7 Features",
+      "feature_count": 7,
+      "feature_order": "N|P|K|temperature|humidity|ph|rainfall",
+      "macro_f1": 0.9954517027687758,
+      "macro_f1_delta": 0.0,
+      "macro_precision": 0.9956709956709957,
+      "macro_recall": 0.9954545454545454,
+      "removed_feature": "none"
+    },
+    {
+      "accuracy": 0.9954545454545455,
+      "accuracy_delta": 0.0,
+      "configuration": "Without N",
+      "feature_count": 6,
+      "feature_order": "P|K|temperature|humidity|ph|rainfall",
+      "macro_f1": 0.9954517027687758,
+      "macro_f1_delta": 0.0,
+      "macro_precision": 0.9956709956709957,
+      "macro_recall": 0.9954545454545454,
+      "removed_feature": "N"
+    },
+    {
+      "accuracy": 0.9931818181818182,
+      "accuracy_delta": -0.002272727272727315,
+      "configuration": "Without P",
+      "feature_count": 6,
+      "feature_order": "N|K|temperature|humidity|ph|rainfall",
+      "macro_f1": 0.9931775541531639,
+      "macro_f1_delta": -0.002274148615611926,
+      "macro_precision": 0.9935064935064936,
+      "macro_recall": 0.993181818181818,
+      "removed_feature": "P"
+    },
+    {
+      "accuracy": 0.9863636363636363,
+      "accuracy_delta": -0.00909090909090915,
+      "configuration": "Without K",
+      "feature_count": 6,
+      "feature_order": "N|P|temperature|humidity|ph|rainfall",
+      "macro_f1": 0.9863551083063278,
+      "macro_f1_delta": -0.009096594462448038,
+      "macro_precision": 0.9867851446798815,
+      "macro_recall": 0.9863636363636363,
+      "removed_feature": "K"
+    },
+    {
+      "accuracy": 0.9954545454545455,
+      "accuracy_delta": 0.0,
+      "configuration": "Without Temperature",
+      "feature_count": 6,
+      "feature_order": "N|P|K|humidity|ph|rainfall",
+      "macro_f1": 0.9954517027687758,
+      "macro_f1_delta": 0.0,
+      "macro_precision": 0.9956709956709957,
+      "macro_recall": 0.9954545454545454,
+      "removed_feature": "temperature"
+    },
+    {
+      "accuracy": 0.9840909090909091,
+      "accuracy_delta": -0.011363636363636354,
+      "configuration": "Without Humidity",
+      "feature_count": 6,
+      "feature_order": "N|P|K|temperature|ph|rainfall",
+      "macro_f1": 0.9839276533756636,
+      "macro_f1_delta": -0.011524049393112246,
+      "macro_precision": 0.9854388036206218,
+      "macro_recall": 0.984090909090909,
+      "removed_feature": "humidity"
+    },
+    {
+      "accuracy": 0.990909090909091,
+      "accuracy_delta": -0.004545454545454519,
+      "configuration": "Without pH",
+      "feature_count": 6,
+      "feature_order": "N|P|K|temperature|humidity|rainfall",
+      "macro_f1": 0.9908948561066659,
+      "macro_f1_delta": -0.00455684666210987,
+      "macro_precision": 0.991538764266037,
+      "macro_recall": 0.9909090909090907,
+      "removed_feature": "ph"
+    },
+    {
+      "accuracy": 0.9681818181818181,
+      "accuracy_delta": -0.027272727272727337,
+      "configuration": "Without Rainfall",
+      "feature_count": 6,
+      "feature_order": "N|P|K|temperature|humidity|ph",
+      "macro_f1": 0.967836993787079,
+      "macro_f1_delta": -0.027614708981696823,
+      "macro_precision": 0.9690899060893341,
+      "macro_recall": 0.9681818181818183,
+      "removed_feature": "rainfall"
+    }
+  ],
+  "same_train_test_rows_for_every_configuration": true
+}

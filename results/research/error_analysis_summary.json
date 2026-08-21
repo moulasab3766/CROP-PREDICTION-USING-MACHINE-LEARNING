@@ -1,0 +1,69 @@
+{
+  "artifacts": {
+    "errors_csv": "results/research/error_analysis.csv"
+  },
+  "correct_vs_incorrect_descriptives": [
+    {
+      "group": "correct",
+      "mean_agreement_count": 5.924657534246576,
+      "mean_top_1_probability": 0.9593607305936073,
+      "mean_top_1_vs_top_2_margin": 0.9317351598173517,
+      "sample_count": 438
+    },
+    {
+      "group": "incorrect",
+      "mean_agreement_count": 5.0,
+      "mean_top_1_probability": 0.635,
+      "mean_top_1_vs_top_2_margin": 0.35,
+      "sample_count": 2
+    }
+  ],
+  "error_count": 2,
+  "errors": [
+    {
+      "actual_crop": "blackgram",
+      "agreement_count": 4,
+      "models_agreeing_with_random_forest": 2,
+      "predicted_crop": "maize",
+      "second_crop": "blackgram",
+      "second_probability": 0.26,
+      "source_row_index": 789,
+      "strongest_predicted_class_shap_contribution": 0.23997676405255566,
+      "strongest_predicted_class_shap_direction": "supports",
+      "strongest_predicted_class_shap_feature": "N",
+      "test_position": 178,
+      "third_crop": "cotton",
+      "third_probability": 0.04,
+      "top_1_probability": 0.58,
+      "top_1_vs_top_2_margin": 0.31999999999999995,
+      "true_crop_in_top_3": true
+    },
+    {
+      "actual_crop": "rice",
+      "agreement_count": 6,
+      "models_agreeing_with_random_forest": 6,
+      "predicted_crop": "jute",
+      "second_crop": "rice",
+      "second_probability": 0.31,
+      "source_row_index": 83,
+      "strongest_predicted_class_shap_contribution": 0.18606823613620316,
+      "strongest_predicted_class_shap_direction": "supports",
+      "strongest_predicted_class_shap_feature": "rainfall",
+      "test_position": 378,
+      "third_crop": "apple",
+      "third_probability": 0.0,
+      "top_1_probability": 0.69,
+      "top_1_vs_top_2_margin": 0.37999999999999995,
+      "true_crop_in_top_3": true
+    }
+  ],
+  "experiment": "Held-out baseline Random Forest error analysis",
+  "held_out_samples": 440,
+  "interpretation": "Every observed error is reported. Because the number is very small, differences from correct cases are descriptive and must not be generalized.",
+  "limitations": [
+    "Very few errors make subgroup averages unstable.",
+    "The benchmark may not represent field, seasonal, sensor, or regional shifts.",
+    "Inter-model agreement and probability margins are reliability indicators, not formal uncertainty."
+  ],
+  "shap_note": "The strongest SHAP contribution is for the predicted class and explains model behavior, not an agronomic cause."
+}

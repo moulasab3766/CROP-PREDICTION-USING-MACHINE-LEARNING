@@ -1,0 +1,66 @@
+{
+  "artifacts": {
+    "calibrated_model": "models/research/random_forest_calibrated.joblib",
+    "metrics_csv": "results/research/calibration_metrics.csv",
+    "reliability_plot": "results/research/calibration_reliability.png"
+  },
+  "baseline_model_sha256_after": "696a33f64fa525af4391466dbde394792589f6ecf7d0a26cdea584f321f2b3f6",
+  "baseline_model_sha256_before": "696a33f64fa525af4391466dbde394792589f6ecf7d0a26cdea584f321f2b3f6",
+  "best_calibration_method": "baseline raw probabilities",
+  "decision_rule": {
+    "maximum_macro_f1_drop": 0.01,
+    "requires_lower_log_loss": true,
+    "requires_lower_top_label_ece": true
+  },
+  "experiment": "Training-only cross-validated probability calibration",
+  "future_ui_decision": "Keep raw production probabilities pending stronger calibration evidence.",
+  "isotonic_status": {
+    "reason": "Skipped prospectively because each training CV calibration fold has limited per-class support; non-parametric isotonic calibration is prone to overfitting with small calibration samples.",
+    "tested": false
+  },
+  "limitations": [
+    "Calibration does not turn model output into agricultural-success probability.",
+    "The comparison applies only to this dataset and fixed held-out split.",
+    "Top-label ECE combines classes and can hide crop-specific calibration patterns."
+  ],
+  "methods": [
+    {
+      "accuracy": 0.9954545454545455,
+      "ece_bins": 10,
+      "log_loss": 0.050389417279776076,
+      "macro_f1": 0.9954517027687758,
+      "macro_precision": 0.9956709956709957,
+      "macro_recall": 0.9954545454545454,
+      "mean_top_probability": 0.9578863636363637,
+      "mean_true_class_probability": 0.9562954545454545,
+      "model": "Baseline Random Forest",
+      "multiclass_brier_score": 0.014724999999999999,
+      "top_label_ece": 0.037568181818181806,
+      "weighted_f1": 0.9954517027687759
+    },
+    {
+      "accuracy": 0.9931818181818182,
+      "ece_bins": 10,
+      "log_loss": 0.08375775278049342,
+      "macro_f1": 0.9931775541531639,
+      "macro_precision": 0.9935064935064936,
+      "macro_recall": 0.993181818181818,
+      "mean_top_probability": 0.9291346801868792,
+      "mean_true_class_probability": 0.9258145428959721,
+      "model": "Sigmoid-Calibrated Random Forest",
+      "multiclass_brier_score": 0.013797078392225087,
+      "top_label_ece": 0.0702765871658956,
+      "weighted_f1": 0.9931775541531639
+    }
+  ],
+  "probability_quality_improved_by_decision_rule": false,
+  "reliability_methodology": {
+    "binning": "10 fixed equal-width bins over [0, 1]",
+    "calibration_training": "5-fold stratified CV inside the 1,760-row training partition",
+    "confidence": "maximum predicted class probability per sample",
+    "ece": "count-weighted absolute difference between bin accuracy and confidence",
+    "held_out_labels_used_for_fitting": false,
+    "outcome": "whether the top predicted label is correct",
+    "transformation": "multiclass top-label calibration"
+  }
+}

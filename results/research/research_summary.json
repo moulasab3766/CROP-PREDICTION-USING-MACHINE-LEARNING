@@ -1,0 +1,176 @@
+{
+  "ablation": {
+    "largest_macro_f1_degradation": {
+      "accuracy": 0.9681818181818181,
+      "accuracy_delta": -0.027272727272727337,
+      "configuration": "Without Rainfall",
+      "feature_count": 6,
+      "feature_order": "N|P|K|temperature|humidity|ph",
+      "macro_f1": 0.967836993787079,
+      "macro_f1_delta": -0.027614708981696823,
+      "macro_precision": 0.9690899060893341,
+      "macro_recall": 0.9681818181818183,
+      "removed_feature": "rainfall"
+    }
+  },
+  "calibration": {
+    "best_method": "baseline raw probabilities",
+    "improved": false
+  },
+  "error_analysis": {
+    "descriptives": [
+      {
+        "group": "correct",
+        "mean_agreement_count": 5.924657534246576,
+        "mean_top_1_probability": 0.9593607305936073,
+        "mean_top_1_vs_top_2_margin": 0.9317351598173517,
+        "sample_count": 438
+      },
+      {
+        "group": "incorrect",
+        "mean_agreement_count": 5.0,
+        "mean_top_1_probability": 0.635,
+        "mean_top_1_vs_top_2_margin": 0.35,
+        "sample_count": 2
+      }
+    ],
+    "error_count": 2
+  },
+  "experiment": "Step-1500 research summary",
+  "inter_model_disagreement": {
+    "agreement_distribution": {
+      "1": 0,
+      "2": 0,
+      "3": 2,
+      "4": 8,
+      "5": 13,
+      "6": 417
+    },
+    "low_agreement_count": 10
+  },
+  "models": [
+    {
+      "Accuracy": 0.9954545454545455,
+      "Log Loss": 0.050389417279776076,
+      "Macro F1": 0.9954517027687758,
+      "Macro Precision": 0.9956709956709957,
+      "Macro Recall": 0.9954545454545454,
+      "Model": "Baseline Random Forest",
+      "Top-1 Accuracy": 0.9954545454545455,
+      "Top-2 Accuracy": 1.0,
+      "Top-3 Accuracy": 1.0,
+      "Weighted F1": 0.9954517027687759
+    },
+    {
+      "Accuracy": 0.9954545454545455,
+      "Log Loss": 0.0628550485140991,
+      "Macro F1": 0.9954517027687758,
+      "Macro Precision": 0.9956709956709957,
+      "Macro Recall": 0.9954545454545454,
+      "Model": "Tuned Random Forest",
+      "Top-1 Accuracy": 0.9954545454545455,
+      "Top-2 Accuracy": 1.0,
+      "Top-3 Accuracy": 1.0,
+      "Weighted F1": 0.9954517027687759
+    },
+    {
+      "Accuracy": 0.9931818181818182,
+      "Log Loss": 0.08375775278049342,
+      "Macro F1": 0.9931775541531639,
+      "Macro Precision": 0.9935064935064936,
+      "Macro Recall": 0.993181818181818,
+      "Model": "Sigmoid-Calibrated Random Forest",
+      "Top-1 Accuracy": 0.9931818181818182,
+      "Top-2 Accuracy": 1.0,
+      "Top-3 Accuracy": 1.0,
+      "Weighted F1": 0.9931775541531639
+    }
+  ],
+  "robustness": {
+    "most_sensitivity_causing_feature": {
+      "average_absolute_top_probability_change": 0.06727272727272728,
+      "average_original_top_1_rank_displacement": 0.013636363636363636,
+      "clipped_values": 13,
+      "evaluated_perturbations": 440,
+      "feature": "humidity",
+      "prediction_flip_rate": 0.013636363636363636,
+      "prediction_flips": 6
+    }
+  },
+  "shap": {
+    "rank_correlation_with_impurity": 0.9285714285714288,
+    "top_global_features": [
+      {
+        "feature": "humidity",
+        "mean_absolute_shap": 0.0329899137816348,
+        "rank_difference": -1,
+        "rf_impurity_importance": 0.22422658789267352,
+        "rf_impurity_rank": 2,
+        "shap_rank": 1
+      },
+      {
+        "feature": "rainfall",
+        "mean_absolute_shap": 0.027406081737335077,
+        "rank_difference": 1,
+        "rf_impurity_importance": 0.2301842257465911,
+        "rf_impurity_rank": 1,
+        "shap_rank": 2
+      },
+      {
+        "feature": "K",
+        "mean_absolute_shap": 0.026296857221855346,
+        "rank_difference": 0,
+        "rf_impurity_importance": 0.17539256542455192,
+        "rf_impurity_rank": 3,
+        "shap_rank": 3
+      }
+    ]
+  },
+  "top_k": {
+    "additional_correct_top_1_to_2": 2,
+    "additional_correct_top_2_to_3": 0,
+    "class_count": 22,
+    "outside_top_3_count": 0,
+    "probability_matrix_shape": [
+      440,
+      22
+    ],
+    "sample_count": 440,
+    "top_1_accuracy": 0.9954545454545455,
+    "top_1_correct_count": 438,
+    "top_1_minus_top_2_margin": {
+      "definition": "top_1_probability - top_2_probability",
+      "mean": 0.9290909090909091,
+      "mean_when_correct": 0.9317351598173517,
+      "mean_when_incorrect": 0.35,
+      "median": 0.98,
+      "near_tie_count": 0,
+      "near_tie_threshold": 0.05
+    },
+    "top_1_probability": {
+      "maximum": 1.0,
+      "mean": 0.9578863636363637,
+      "mean_when_correct": 0.9593607305936073,
+      "mean_when_incorrect": 0.635,
+      "median": 0.99,
+      "minimum": 0.55
+    },
+    "top_2_accuracy": 1.0,
+    "top_2_correct_count": 440,
+    "top_3_accuracy": 1.0,
+    "top_3_correct_count": 440,
+    "top_5_accuracy": 1.0,
+    "top_5_correct_count": 440
+  },
+  "tuning": {
+    "best_parameters": {
+      "class_weight": "balanced",
+      "max_depth": null,
+      "max_features": "sqrt",
+      "min_samples_leaf": 1,
+      "min_samples_split": 10,
+      "n_estimators": 200
+    },
+    "outcome": "tied"
+  }
+}

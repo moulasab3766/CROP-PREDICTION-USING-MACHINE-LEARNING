@@ -106,8 +106,9 @@ python -m pip install -r requirements.txt
 ```
 
 The weather integration uses the pinned `requests` dependency for bounded HTTP
-requests. The basic Open-Meteo geocoding and forecast endpoints used here require no
-API key, paid subscription, or user account.
+requests. Research commands use pinned `shap` for experimental explanations and
+`pytest` for the complete automated suite. The basic Open-Meteo geocoding and
+forecast endpoints used here require no API key, paid subscription, or user account.
 
 ## Input modes
 
@@ -197,6 +198,12 @@ python -m unittest discover -s tests -p "test_*.py"
 
 # 8. Launch the two-mode application
 streamlit run app.py
+
+# 9. Run deterministic tests through pytest
+pytest
+
+# 10. Run the complete paper-oriented research suite
+python -m src.research.run_all
 ```
 
 Training uses an 80/20 stratified train/test split with `random_state=42`. The
@@ -220,8 +227,11 @@ assessment outputs.
 │   └── dataset_metadata.json            # Source version, license, size, checksum
 ├── models/
 │   ├── random_forest_crop.joblib       # Saved fitted classifier
-│   └── label_encoder.joblib            # Saved target encoder
-├── results/                            # Measured evaluation/explanation artifacts
+│   ├── label_encoder.joblib            # Saved target encoder
+│   └── research/                       # Experimental calibrated/tuned variants
+├── results/
+│   ├── ...                             # Protected baseline evaluation artifacts
+│   └── research/                       # Paper-oriented tables, JSON, and figures
 ├── src/
 │   ├── download_data.py                 # Safe KaggleHub copy/checksum helper
 │   ├── preprocessing.py                # Load, validate, split features/target
@@ -232,8 +242,9 @@ assessment outputs.
 │   ├── explain.py                      # Global feature importance
 │   ├── soil_assessment.py              # Independent configurable soil rules
 │   ├── weather.py                      # Open-Meteo geocoding/weather boundary
-│   └── pipeline.py                     # Combined structured inference response
-└── tests/                              # ML, UI, mocked weather, and mapping tests
+│   ├── pipeline.py                     # Combined structured inference response
+│   └── research/                       # Isolated reproducible research experiments
+└── tests/                              # Production and deterministic research tests
 ```
 
 The combined pipeline returns the recommended crop, its model probability, the
@@ -292,6 +303,89 @@ a unique accuracy win. For the documented functional input (`90, 42, 43, 25, 80,
 6.5, 200`), the saved Random Forest returned Rice `54%`, Jute `45%`, and Watermelon
 `1%`. These are raw `predict_proba()` outputs for that input, not calibrated
 guarantees or claims about real-world field performance.
+
+## Research Evaluation
+
+The selected reference system lacks integrated location-assisted live weather input
+and explainable reasoning for the predicted crop; this implementation extends the
+baseline with these capabilities while also evaluating model reliability. **These
+features represent enhancements relative to the selected reference system.** They
+are not claims that weather APIs, SHAP, Random Forest, or Top-K recommendation are
+globally new in agricultural research.
+
+All experiments reconstruct the same ordered seven-feature, 1,760/440 stratified
+split with `random_state=42`. Model selection and calibration fitting use the
+training partition only. Experimental files are isolated under `results/research/`
+and `models/research/`; neither experimental model is used by `app.py`.
+
+### Measured research results
+
+- **Top-K:** Baseline Top-1 accuracy is `0.995455` (438/440). Both mistakes have the
+  true crop at rank two, producing Top-2 and Top-3 accuracy of `1.000000`. This only
+  shows model-ranked alternatives on the benchmark; it does not make those crops
+  agronomically interchangeable.
+- **Probability calibration:** Five-fold training-only sigmoid calibration produced
+  held-out accuracy `0.993182`, macro F1 `0.993178`, log loss `0.083758`, and
+  10-bin top-label ECE `0.070277`. The raw baseline values were `0.995455`,
+  `0.995452`, `0.050389`, and `0.037568`. The declared decision rule therefore
+  finds no probability-quality improvement, so production inference remains raw.
+  The plot uses multiclass top-label reliability: each sample contributes its
+  maximum probability and whether that top label is correct. This follows the
+  cross-validated fitting principle in the
+  [scikit-learn calibration documentation](https://scikit-learn.org/stable/modules/calibration.html).
+- **SHAP explainability:** With SHAP `0.52.0`, the verified output shape is
+  `440 × 7 × 22`. Mean absolute SHAP ranks humidity, rainfall, and K first; its
+  feature-rank correlation with RF impurity importance is `0.928571`. SHAP and
+  impurity importance differ because one summarizes contribution magnitudes over
+  evaluated samples/classes while the other summarizes fitted-tree split usage.
+  The implementation handles the documented multiclass array change described by
+  [SHAP TreeExplainer](https://shap.readthedocs.io/en/stable/generated/shap.TreeExplainer.html).
+- **Hyperparameter tuning:** A 16-candidate, five-fold `RandomizedSearchCV` selected
+  `n_estimators=200`, `max_depth=None`, `max_features="sqrt"`,
+  `min_samples_split=10`, `min_samples_leaf=1`, and `class_weight="balanced"`.
+  Tuned accuracy and macro F1 tie the baseline exactly (`0.995455` and `0.995452`),
+  while tuned log loss is worse (`0.062855` versus `0.050389`). The tuned model does
+  not replace production.
+- **Feature ablation:** Removing rainfall caused the largest macro-F1 change
+  (`-0.027615`); removing no feature improved macro F1. This is benchmark-model
+  dependence, not evidence that rainfall causally determines crop suitability.
+- **Controlled robustness:** Across 110 stratified held-out samples, each feature had
+  440 non-zero perturbations. Humidity and N each caused six Top-1 flips (`0.013636`
+  flip rate); humidity ranked most sensitive under the declared flip-rate then
+  probability-change ordering. These perturbations are numerical sensitivity tests,
+  not forecasts or field-validation evidence.
+- **Inter-model disagreement:** Of 440 held-out samples, the six original classifier
+  definitions agreed 6/6 on 417, 5/6 on 13, 4/6 on 8, and 3/6 on 2. Ten samples had
+  at most 4/6 modal agreement. This is **inter-model disagreement**, not formal
+  uncertainty.
+- **Error analysis:** The baseline still has exactly two errors: blackgram → maize
+  and rice → jute. Both true crops appear second in the RF ranking. The two errors
+  have mean Top-1 probability `0.635` and mean top-two margin `0.350`, compared with
+  `0.959361` and `0.931735` for 438 correct cases. Two cases are far too few for a
+  general causal or reliability conclusion.
+
+Random Forest impurity importance, global SHAP importance, and feature-ablation
+performance are retained as three distinct forms of evidence. Their agreement or
+disagreement must not be interpreted as proof of an agronomic mechanism.
+
+### Reproduce individual experiments
+
+```bash
+python -m src.research.evaluate_topk
+python -m src.research.calibrate_probabilities
+python -m src.research.shap_explain
+python -m src.research.tune_random_forest       # full 16-candidate search
+python -m src.research.tune_random_forest --quick  # development only
+python -m src.research.feature_ablation
+python -m src.research.robustness_analysis
+python -m src.research.model_disagreement
+python -m src.research.error_analysis
+python -m src.research.summarize_research
+```
+
+The measured narrative is in `results/research/findings.md`; consolidated model
+metrics are in `research_summary.csv` and `research_summary.json`. Figures are
+paper-ready research artifacts but are not yet final IEEE-layout figures.
 
 ## Interpretation and scientific contribution
 

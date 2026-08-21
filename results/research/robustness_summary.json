@@ -1,0 +1,168 @@
+{
+  "artifacts": {
+    "detailed_csv": "results/research/robustness_detailed.csv",
+    "plot": "results/research/robustness_analysis.png",
+    "summary_csv": "results/research/robustness_summary.csv"
+  },
+  "clipping_policy": "Perturbed values are clipped to the minimum and maximum observed in the training partition; every clipped value is flagged in the detailed CSV.",
+  "experiment": "Controlled benchmark input perturbation sensitivity",
+  "limitations": [
+    "Perturbations are numerical sensitivity tests, not forecasts or sensor-error models.",
+    "Results do not establish robustness to all real agricultural conditions.",
+    "Training-range clipping can reduce the effective perturbation near boundaries."
+  ],
+  "metric_definitions": {
+    "flip_rate": "fraction of non-zero perturbations changing Top-1 crop",
+    "probability_change": "absolute change in the maximum probability",
+    "ranking_change": "zero-based displacement of the original Top-1 crop"
+  },
+  "most_sensitivity_causing_feature": {
+    "average_absolute_top_probability_change": 0.06727272727272728,
+    "average_original_top_1_rank_displacement": 0.013636363636363636,
+    "clipped_values": 13,
+    "evaluated_perturbations": 440,
+    "feature": "humidity",
+    "prediction_flip_rate": 0.013636363636363636,
+    "prediction_flips": 6
+  },
+  "perturbations": {
+    "K": {
+      "changes": [
+        -10.0,
+        -5.0,
+        0.0,
+        5.0,
+        10.0
+      ],
+      "kind": "absolute"
+    },
+    "N": {
+      "changes": [
+        -10.0,
+        -5.0,
+        0.0,
+        5.0,
+        10.0
+      ],
+      "kind": "absolute"
+    },
+    "P": {
+      "changes": [
+        -10.0,
+        -5.0,
+        0.0,
+        5.0,
+        10.0
+      ],
+      "kind": "absolute"
+    },
+    "humidity": {
+      "changes": [
+        -5.0,
+        -2.5,
+        0.0,
+        2.5,
+        5.0
+      ],
+      "kind": "absolute"
+    },
+    "ph": {
+      "changes": [
+        -0.2,
+        -0.1,
+        0.0,
+        0.1,
+        0.2
+      ],
+      "kind": "absolute"
+    },
+    "rainfall": {
+      "changes": [
+        -0.1,
+        -0.05,
+        0.0,
+        0.05,
+        0.1
+      ],
+      "kind": "relative"
+    },
+    "temperature": {
+      "changes": [
+        -2.0,
+        -1.0,
+        0.0,
+        1.0,
+        2.0
+      ],
+      "kind": "absolute"
+    }
+  },
+  "samples_per_crop_class": 5,
+  "selected_samples": 110,
+  "selection": "first deterministic held-out positions within each encoded class",
+  "summary": [
+    {
+      "average_absolute_top_probability_change": 0.023636363636363636,
+      "average_original_top_1_rank_displacement": 0.013636363636363636,
+      "clipped_values": 15,
+      "evaluated_perturbations": 440,
+      "feature": "N",
+      "prediction_flip_rate": 0.013636363636363636,
+      "prediction_flips": 6
+    },
+    {
+      "average_absolute_top_probability_change": 0.049545454545454545,
+      "average_original_top_1_rank_displacement": 0.006818181818181818,
+      "clipped_values": 26,
+      "evaluated_perturbations": 440,
+      "feature": "P",
+      "prediction_flip_rate": 0.006818181818181818,
+      "prediction_flips": 3
+    },
+    {
+      "average_absolute_top_probability_change": 0.11279545454545455,
+      "average_original_top_1_rank_displacement": 0.004545454545454545,
+      "clipped_values": 19,
+      "evaluated_perturbations": 440,
+      "feature": "K",
+      "prediction_flip_rate": 0.004545454545454545,
+      "prediction_flips": 2
+    },
+    {
+      "average_absolute_top_probability_change": 0.043409090909090904,
+      "average_original_top_1_rank_displacement": 0.0,
+      "clipped_values": 0,
+      "evaluated_perturbations": 440,
+      "feature": "temperature",
+      "prediction_flip_rate": 0.0,
+      "prediction_flips": 0
+    },
+    {
+      "average_absolute_top_probability_change": 0.06727272727272728,
+      "average_original_top_1_rank_displacement": 0.013636363636363636,
+      "clipped_values": 13,
+      "evaluated_perturbations": 440,
+      "feature": "humidity",
+      "prediction_flip_rate": 0.013636363636363636,
+      "prediction_flips": 6
+    },
+    {
+      "average_absolute_top_probability_change": 0.014977272727272726,
+      "average_original_top_1_rank_displacement": 0.004545454545454545,
+      "clipped_values": 0,
+      "evaluated_perturbations": 440,
+      "feature": "ph",
+      "prediction_flip_rate": 0.004545454545454545,
+      "prediction_flips": 2
+    },
+    {
+      "average_absolute_top_probability_change": 0.035295454545454547,
+      "average_original_top_1_rank_displacement": 0.0,
+      "clipped_values": 2,
+      "evaluated_perturbations": 440,
+      "feature": "rainfall",
+      "prediction_flip_rate": 0.0,
+      "prediction_flips": 0
+    }
+  ]
+}
